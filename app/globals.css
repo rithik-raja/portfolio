@@ -52,6 +52,20 @@ body {
   padding: 3.5rem 1.25rem 5rem;
 }
 
+.section-reveal-io {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.section-reveal-io.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .intro-block {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -157,10 +171,35 @@ body {
   color: rgba(255, 255, 255, 0.9);
 }
 
+.project-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.project-skill-pill {
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 9999px;
+  padding: 0.22rem 0.64rem;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .entry-card ul {
   margin: 0.7rem 0 0;
   padding-left: 1rem;
   color: rgba(255, 255, 255, 0.88);
+}
+
+.entry-card ul.project-skills {
+  margin: 0.45rem 0 0;
+  padding-left: 0;
 }
 
 .entry-card li {
@@ -171,8 +210,53 @@ body {
   display: inline-block;
   margin-top: 0.7rem;
   color: #ffffff;
-  text-underline-offset: 0.2rem;
-  text-decoration-color: rgba(255, 255, 255, 0.45);
+}
+
+.project-link {
+  position: relative;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.entry-card a.project-link {
+  display: inline-flex;
+}
+
+.project-link svg {
+  flex-shrink: 0;
+}
+
+.project-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.2rem;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.85);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms ease;
+}
+
+.project-link:hover::after,
+.project-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-reveal-io {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .project-link::after {
+    transition: none;
+    transform: scaleX(1);
+  }
 }
 
 .experience-journey {
