@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #101010;
 }
 
 @theme inline {
@@ -12,15 +12,52 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
+
+.extrusion-page {
+  min-height: 300vh;
+  background: #ffffff;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.overlay {
+  position: absolute;
+  inset: auto 0 2.2rem 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.overlay p {
+  margin: 0;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 999px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.67rem;
+  color: rgba(0, 0, 0, 0.72);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.spacer {
+  height: 220vh;
+}
+
+@media (max-width: 768px) {
+  .overlay p {
+    letter-spacing: 0.16em;
+    font-size: 0.6rem;
+  }
 }
