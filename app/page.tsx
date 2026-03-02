@@ -10,8 +10,75 @@ import helvetikerFontData from "three/examples/fonts/helvetiker_regular.typeface
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 const TILT_X = 0.2;
-const TILT_Y = 0.2;
+const TILT_Y = 0.3;
 const PUSH_Z = 1;
+const EXTRUSION_SCROLL_DISTANCE_RATIO = 0.65;
+const EMBELLISHMENT_STAGGER_DELAYS = [
+  0.37, 0.09, 0.61, 0.22, 0.53, 0.14, 0.45, 0.29, 0.68, 0.17,
+];
+const EMBELLISHMENTS = [
+  { kind: "donut", position: [-6.0, 3.25, -2.6], rotation: [0.64, 0.18, 0.42], scale: 0.7, rise: 0.78 },
+  { kind: "pill", position: [-5.5, -0.1, -2.0], rotation: [0.38, 0.82, 0.16], scale: 0.74, rise: 0.82 },
+  { kind: "donut", position: [-4.45, 1.55, -2.35], rotation: [0.82, -0.26, 0.24], scale: 0.58, rise: 0.74 },
+  { kind: "donut", position: [-3.9, -2.75, -2.25], rotation: [0.46, 0.64, -0.12], scale: 0.7, rise: 0.84 },
+  { kind: "pill", position: [-1.65, 3.55, -2.75], rotation: [0.72, -0.42, 0.14], scale: 0.56, rise: 0.7 },
+  { kind: "pill", position: [1.75, -3.7, -2.2], rotation: [0.5, -0.68, 0.18], scale: 0.67, rise: 0.77 },
+  { kind: "donut", position: [3.95, 2.95, -2.65], rotation: [0.66, 0.48, -0.22], scale: 0.62, rise: 0.73 },
+  { kind: "pill", position: [4.85, -3.2, -2.1], rotation: [0.42, 0.28, 0.64], scale: 0.78, rise: 0.9 },
+  { kind: "donut", position: [4.0, -0.25, -2.35], rotation: [0.6, 0.56, -0.18], scale: 0.8, rise: 0.93 },
+  { kind: "pill", position: [6.65, 2.25, -2.8], rotation: [0.54, 0.16, 0.58], scale: 0.71, rise: 0.79 },
+] as const;
+
+const experiences = [
+  {
+    title: "Data Scientist 2",
+    company: "Humana Inc.",
+    period: "January 2025 - Present",
+    highlights: [
+      "Built a generative AI medical code extraction system that improved detection from 72% to 93% and reduced cost by 40%.",
+      "Designed citation alignment with span detection, raising evidence mapping accuracy from 50% to 99.8%.",
+      "Automated QA data augmentation with Python and CI/CD, shrinking turnaround from 4 days to 5 minutes.",
+    ],
+  },
+  {
+    title: "Software Engineering Intern",
+    company: "Bank of America Corp.",
+    period: "May 2024 - August 2024",
+    highlights: [
+      "Migrated critical React.js code to the latest version while resolving dependency, API, and security issues.",
+      "Built an ASP.NET REST API for cross-database test-data workflows within company VPC and Azure CI/CD.",
+      "Wrote SQL procedures to remove redundant data at scale and cut table sizes by over 50%.",
+    ],
+  },
+  {
+    title: "AI/ML Research Assistant",
+    company: "Human Neuromechanics Lab, University of Florida",
+    period: "January 2023 - December 2023",
+    highlights: [
+      "Developed a CNN to classify neural vs. non-neural independent components from EEG recordings.",
+      "Implemented crowd-label reliability weighting to reduce annotator bias during model training.",
+    ],
+  },
+];
+
+const projects = [
+  {
+    name: "Gathr",
+    period: "April 2024 - April 2025",
+    stack: "React Native, GCP",
+    summary:
+      "Launched a cross-platform campus involvement app serving 5,000+ users and 200+ student organizations.",
+    link: "https://getgathr.app",
+  },
+  {
+    name: "PdfGator",
+    period: "June 2023 - September 2023",
+    stack: "React.js, Django REST, AWS",
+    summary:
+      "Built a citation-aware research platform for large academic PDFs with vector retrieval and secure auth.",
+    link: "https://github.com/rithik-raja/pdfgator-frontend",
+  },
+];
 
 function createCenteredTextGeometry(
   text: string,
@@ -83,11 +150,11 @@ function NameExtrusionScene({ progress }: { progress: number }) {
   }, []);
 
   const rithikGeometry = useMemo(
-    () => createCenteredTextGeometry("Rithik", font, 1.55),
+    () => createCenteredTextGeometry("rithik", font, 1.55),
     [font]
   );
   const rajaGeometry = useMemo(
-    () => createCenteredTextGeometry("Raja", font, -1.55),
+    () => createCenteredTextGeometry("raja", font, -1.55),
     [font]
   );
 
@@ -116,15 +183,55 @@ function NameExtrusionScene({ progress }: { progress: number }) {
     [sideTexture]
   );
 
+  const embellishmentMaterials = useMemo(
+    () =>
+      EMBELLISHMENTS.map(
+        () =>
+          new THREE.MeshPhysicalMaterial({
+            color: "#090909",
+            metalness: 0.36,
+            roughness: 0.22,
+            clearcoat: 1,
+            clearcoatRoughness: 0.12,
+            transparent: true,
+            opacity: 0,
+            reflectivity: 1,
+          })
+      ),
+    []
+  );
+
+  const embellishmentGeometries = useMemo(
+    () => ({
+      donut: new THREE.TorusGeometry(0.55, 0.16, 32, 64),
+      pill: new THREE.CapsuleGeometry(0.22, 0.75, 10, 20),
+    }),
+    []
+  );
+
+  const embellishmentRefs = useRef<Array<THREE.Mesh | null>>([]);
+
   useEffect(() => {
     return () => {
       rithikGeometry.dispose();
       rajaGeometry.dispose();
       frontMaterial.dispose();
       sideMaterial.dispose();
+      embellishmentMaterials.forEach((material) => material.dispose());
+      embellishmentGeometries.donut.dispose();
+      embellishmentGeometries.pill.dispose();
       sideTexture?.dispose();
     };
-  }, [frontMaterial, rajaGeometry, rithikGeometry, sideMaterial, sideTexture]);
+  }, [
+    embellishmentGeometries.donut,
+    embellishmentGeometries.pill,
+    embellishmentMaterials,
+    frontMaterial,
+    rajaGeometry,
+    rithikGeometry,
+    sideMaterial,
+    sideTexture,
+  ]);
 
   useFrame((_, delta) => {
     smoothProgress.current = THREE.MathUtils.damp(
@@ -146,6 +253,29 @@ function NameExtrusionScene({ progress }: { progress: number }) {
       groupRef.current.rotation.y = -t * TILT_Y;
       groupRef.current.position.z = -t * PUSH_Z;
     }
+
+    EMBELLISHMENTS.forEach((item, index) => {
+      const mesh = embellishmentRefs.current[index];
+      if (!mesh) {
+        return;
+      }
+
+      const delayed = clamp(
+        (t - EMBELLISHMENT_STAGGER_DELAYS[index]) /
+          (1 - EMBELLISHMENT_STAGGER_DELAYS[index]),
+        0,
+        1
+      );
+      const eased = THREE.MathUtils.smootherstep(delayed, 0, 1);
+      mesh.position.y = item.position[1] - item.rise * (1 - eased);
+      mesh.position.z = item.position[2] - (1 - eased) * 0.35;
+      mesh.rotation.x = item.rotation[0] + (1 - eased) * 0.28;
+      mesh.rotation.y = item.rotation[1] + (1 - eased) * 0.2;
+      mesh.rotation.z = item.rotation[2] + (1 - eased) * 0.16;
+
+      const material = mesh.material as THREE.MeshPhysicalMaterial;
+      material.opacity = eased * 0.88;
+    });
   });
 
   return (
@@ -177,6 +307,30 @@ function NameExtrusionScene({ progress }: { progress: number }) {
             receiveShadow
           />
         </group>
+
+        <group>
+          {EMBELLISHMENTS.map((item, index) => (
+            <mesh
+              key={`${item.kind}-${index}`}
+              ref={(node) => {
+                embellishmentRefs.current[index] = node;
+              }}
+              geometry={
+                item.kind === "donut"
+                  ? embellishmentGeometries.donut
+                  : embellishmentGeometries.pill
+              }
+              material={embellishmentMaterials[index]}
+              position={item.position}
+              rotation={
+                new THREE.Euler(item.rotation[0], item.rotation[1], item.rotation[2])
+              }
+              scale={item.scale}
+              castShadow
+              receiveShadow
+            />
+          ))}
+        </group>
       </group>
     </>
   );
@@ -187,8 +341,8 @@ export default function Home() {
 
   useEffect(() => {
     const onScroll = () => {
-      const maxScroll = document.body.scrollHeight - window.innerHeight;
-      const current = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      const targetDistance = window.innerHeight * EXTRUSION_SCROLL_DISTANCE_RATIO;
+      const current = targetDistance > 0 ? window.scrollY / targetDistance : 0;
       setScrollProgress(clamp(current, 0, 1));
     };
 
@@ -212,11 +366,54 @@ export default function Home() {
         >
           <NameExtrusionScene progress={scrollProgress} />
         </Canvas>
-        <div className="overlay">
-          <p>Scroll to extrude</p>
-        </div>
       </div>
-      <div className="spacer" aria-hidden />
+
+      <section
+        className="content-shell"
+        aria-label="Experience and projects"
+      >
+        <div className="content-inner">
+          <header className="content-header">
+            <p>Resume</p>
+            <h1>Experience + Projects</h1>
+          </header>
+
+          <section className="content-block" aria-label="Experience">
+            <h2>Experience</h2>
+            {experiences.map((item) => (
+              <article key={`${item.company}-${item.title}`} className="entry-card">
+                <div className="entry-top">
+                  <h3>{item.title}</h3>
+                  <span>{item.period}</span>
+                </div>
+                <p className="entry-company">{item.company}</p>
+                <ul>
+                  {item.highlights.map((highlight) => (
+                    <li key={highlight}>{highlight}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </section>
+
+          <section className="content-block" aria-label="Projects">
+            <h2>Projects</h2>
+            {projects.map((project) => (
+              <article key={project.name} className="entry-card">
+                <div className="entry-top">
+                  <h3>{project.name}</h3>
+                  <span>{project.period}</span>
+                </div>
+                <p>{project.stack}</p>
+                <p>{project.summary}</p>
+                <a href={project.link} target="_blank" rel="noreferrer">
+                  {project.link}
+                </a>
+              </article>
+            ))}
+          </section>
+        </div>
+      </section>
     </main>
   );
 }
