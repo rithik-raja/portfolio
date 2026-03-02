@@ -1,6 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
@@ -31,33 +32,18 @@ const EMBELLISHMENTS = [
 
 const experiences = [
   {
-    title: "Data Scientist 2",
-    company: "Humana Inc.",
-    period: "January 2025 - Present",
-    highlights: [
-      "Built a generative AI medical code extraction system that improved detection from 72% to 93% and reduced cost by 40%.",
-      "Designed citation alignment with span detection, raising evidence mapping accuracy from 50% to 99.8%.",
-      "Automated QA data augmentation with Python and CI/CD, shrinking turnaround from 4 days to 5 minutes.",
-    ],
+    title: "Data Scientist",
+    company: "Humana",
+    logoSrc: "/humana-logo.jpeg",
+    summary:
+      "At Humana, I build healthcare AI systems where quality and auditability matter as much as model performance. I improved medical code extraction from 72% to 93%, reduced system cost by 40%, and raised citation-to-evidence accuracy from 50% to 99.8%, helping teams move faster while staying aligned with strict healthcare standards.",
   },
   {
-    title: "Software Engineering Intern",
-    company: "Bank of America Corp.",
-    period: "May 2024 - August 2024",
-    highlights: [
-      "Migrated critical React.js code to the latest version while resolving dependency, API, and security issues.",
-      "Built an ASP.NET REST API for cross-database test-data workflows within company VPC and Azure CI/CD.",
-      "Wrote SQL procedures to remove redundant data at scale and cut table sizes by over 50%.",
-    ],
-  },
-  {
-    title: "AI/ML Research Assistant",
-    company: "Human Neuromechanics Lab, University of Florida",
-    period: "January 2023 - December 2023",
-    highlights: [
-      "Developed a CNN to classify neural vs. non-neural independent components from EEG recordings.",
-      "Implemented crowd-label reliability weighting to reduce annotator bias during model training.",
-    ],
+    title: "Software Engineer",
+    company: "Bank of America",
+    logoSrc: "/bank-of-america-logo.jpeg",
+    summary:
+      "At Bank of America, I focused on making internal systems faster and safer for teams that support highly regulated financial workflows. I modernized React code, shipped backend automation with ASP.NET, and helped cut redundant SQL table footprint by over 50%, which made releases easier to validate in a compliance-heavy environment.",
   },
 ];
 
@@ -380,20 +366,38 @@ export default function Home() {
 
           <section className="content-block" aria-label="Experience">
             <h2>Experience</h2>
-            {experiences.map((item) => (
-              <article key={`${item.company}-${item.title}`} className="entry-card">
-                <div className="entry-top">
-                  <h3>{item.title}</h3>
-                  <span>{item.period}</span>
-                </div>
-                <p className="entry-company">{item.company}</p>
-                <ul>
-                  {item.highlights.map((highlight) => (
-                    <li key={highlight}>{highlight}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
+            <div className="experience-journey">
+              <div className="experience-timeline">
+                {experiences.map((item) => (
+                  <article
+                    key={`${item.company}-${item.title}`}
+                    className="experience-marker"
+                  >
+                    <div className="logo-frame">
+                      <Image
+                        src={item.logoSrc}
+                        alt={`${item.company} logo`}
+                        width={66}
+                        height={66}
+                        className="company-logo"
+                      />
+                    </div>
+                    <p className="marker-role">{item.title}</p>
+                    <p className="marker-company">{item.company}</p>
+                  </article>
+                ))}
+              </div>
+              <div className="experience-text-column">
+                {experiences.map((item) => (
+                  <p
+                    key={`${item.company}-summary`}
+                    className="experience-paragraph"
+                  >
+                    {item.summary}
+                  </p>
+                ))}
+              </div>
+            </div>
           </section>
 
           <section className="content-block" aria-label="Projects">
