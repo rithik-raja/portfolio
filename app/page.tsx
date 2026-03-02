@@ -354,15 +354,31 @@ export default function Home() {
         </Canvas>
       </div>
 
-      <section
-        className="content-shell"
-        aria-label="Experience and projects"
-      >
+      <section className="content-shell" aria-label="Experience and projects">
         <div className="content-inner">
-          <header className="content-header">
-            <p>Resume</p>
-            <h1>Experience + Projects</h1>
-          </header>
+          <section className="intro-block" aria-label="Personal introduction">
+            <div className="intro-copy">
+              <h1>I build software that just works</h1>
+              <p>
+                I design and ship production systems with a bias for reliability,
+                clarity, and measurable impact. Across healthcare, fintech, and
+                product engineering, I focus on turning complex requirements into
+                maintainable software that teams can trust every day.
+              </p>
+            </div>
+
+            <div className="intro-photo-wrap" aria-hidden="true">
+              <div className="intro-photo-outline" />
+              <Image
+                src="https://picsum.photos/440/560?grayscale"
+                alt="Portrait placeholder"
+                width={440}
+                height={560}
+                sizes="(max-width: 768px) 230px, 280px"
+                className="intro-photo"
+              />
+            </div>
+          </section>
 
           <section className="content-block" aria-label="Experience">
             <h2>Experience</h2>

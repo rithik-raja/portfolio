@@ -52,18 +52,63 @@ body {
   padding: 3.5rem 1.25rem 5rem;
 }
 
-.content-header p {
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.62);
+.intro-block {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: end;
+  gap: 2.2rem;
 }
 
-.content-header h1 {
-  margin: 0.6rem 0 0;
-  font-size: clamp(1.8rem, 4.4vw, 3rem);
-  line-height: 1.1;
+.intro-copy h1 {
+  margin: 0;
+  max-width: 16ch;
+  font-size: clamp(1.8rem, 4.2vw, 3.2rem);
+  line-height: 1.04;
+}
+
+.intro-copy p {
+  margin: 1.05rem 0 0;
+  max-width: 56ch;
+  color: rgba(255, 255, 255, 0.84);
+  line-height: 1.7;
+}
+
+.intro-photo-wrap {
+  position: relative;
+  justify-self: end;
+  width: min(100%, 280px);
+  aspect-ratio: 4 / 5;
+}
+
+.intro-photo-outline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 22px;
+  bottom: 22px;
+  border: 1.6px solid rgba(255, 255, 255, 0.92);
+  transition: right 220ms ease, bottom 220ms ease;
+}
+
+.intro-photo {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: calc(100% - 22px);
+  height: calc(100% - 22px);
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: right 220ms ease, bottom 220ms ease;
+}
+
+.intro-photo-wrap:hover .intro-photo-outline {
+  right: 18px;
+  bottom: 18px;
+}
+
+.intro-photo-wrap:hover .intro-photo {
+  right: 6px;
+  bottom: 6px;
 }
 
 .content-block {
@@ -230,6 +275,17 @@ body {
 
   .content-inner {
     padding: 2.5rem 1rem 4rem;
+  }
+
+  .intro-block {
+    grid-template-columns: 1fr;
+    gap: 1.35rem;
+    align-items: start;
+  }
+
+  .intro-photo-wrap {
+    justify-self: start;
+    width: min(100%, 230px);
   }
 
   .entry-top {
