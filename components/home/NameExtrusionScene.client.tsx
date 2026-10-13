@@ -3,18 +3,18 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import helvetikerFontData from "three/examples/fonts/helvetiker_regular.typeface.json";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import helvetikerFontData from "@/assets/fonts/helvetiker_regular.typeface.json";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
 
 const TILT_X = 0.2;
 const TILT_Y = 0.3;
 const PUSH_Z = 1;
-const EMBELLISHMENT_STAGGER_DELAYS = [
+const DESKTOP_EMBELLISHMENT_STAGGER_DELAYS = [
   0.37, 0.09, 0.61, 0.22, 0.53, 0.14, 0.45, 0.29, 0.68, 0.17,
 ];
 
-const EMBELLISHMENTS = [
+const DESKTOP_EMBELLISHMENTS = [
   {
     kind: "donut",
     position: [-6.0, 3.25, -2.6],
@@ -87,6 +87,83 @@ const EMBELLISHMENTS = [
   },
 ] as const;
 
+const MOBILE_EMBELLISHMENT_STAGGER_DELAYS = [
+  0.16, 0.34, 0.22, 0.47, 0.29, 0.41, 0.12, 0.38, 0.25, 0.44,
+];
+
+const MOBILE_EMBELLISHMENTS = [
+  {
+    kind: "donut",
+    position: [-1.35, 5.85, -2.4],
+    rotation: [0.73, -0.31, 0.2],
+    scale: 0.64,
+    rise: 0.76,
+  },
+  {
+    kind: "pill",
+    position: [1.65, 4.1, -2.55],
+    rotation: [0.54, 0.22, 0.66],
+    scale: 0.62,
+    rise: 0.72,
+  },
+  {
+    kind: "pill",
+    position: [0.05, 4.2, -2.2],
+    rotation: [0.86, -0.18, 0.34],
+    scale: 0.57,
+    rise: 0.68,
+  },
+  {
+    kind: "donut",
+    position: [-1.9, -5.05, -2.35],
+    rotation: [0.44, 0.59, -0.13],
+    scale: 0.67,
+    rise: 0.83,
+  },
+  {
+    kind: "pill",
+    position: [2.35, -4.35, -2.25],
+    rotation: [0.46, -0.62, 0.12],
+    scale: 0.68,
+    rise: 0.79,
+  },
+  {
+    kind: "donut",
+    position: [0.2, -4.1, -2.5],
+    rotation: [0.62, 0.43, -0.27],
+    scale: 0.58,
+    rise: 0.74,
+  },
+  {
+    kind: "pill",
+    position: [-2.85, 5.15, -2.35],
+    rotation: [0.58, 0.14, 0.69],
+    scale: 0.55,
+    rise: 0.71,
+  },
+  {
+    kind: "donut",
+    position: [2.75, 5.45, -2.6],
+    rotation: [0.74, -0.22, 0.11],
+    scale: 0.52,
+    rise: 0.75,
+  },
+  {
+    kind: "pill",
+    position: [-2.65, -5.25, -2.45],
+    rotation: [0.4, 0.66, -0.19],
+    scale: 0.61,
+    rise: 0.82,
+  },
+  {
+    kind: "donut",
+    position: [2.9, -5.55, -2.3],
+    rotation: [0.48, -0.57, 0.23],
+    scale: 0.63,
+    rise: 0.86,
+  },
+] as const;
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
@@ -126,7 +203,18 @@ export function NameExtrusionScene({ progress }: NameExtrusionSceneProps) {
   const layoutGroupRef = useRef<THREE.Group>(null);
   const groupRef = useRef<THREE.Group>(null);
   const smoothProgress = useRef(0);
-  const { viewport } = useThree();
+  const { viewport, size } = useThree();
+  const isMobile = size.width < 768;
+  const activeEmbellishments = isMobile
+    ? MOBILE_EMBELLISHMENTS
+    : DESKTOP_EMBELLISHMENTS;
+  const activeStaggerDelays = isMobile
+    ? MOBILE_EMBELLISHMENT_STAGGER_DELAYS
+    : DESKTOP_EMBELLISHMENT_STAGGER_DELAYS;
+  const embellishmentCount = Math.max(
+    DESKTOP_EMBELLISHMENTS.length,
+    MOBILE_EMBELLISHMENTS.length
+  );
 
   const font = useMemo(() => {
     const loader = new FontLoader();
@@ -199,7 +287,8 @@ export function NameExtrusionScene({ progress }: NameExtrusionSceneProps) {
 
   const embellishmentMaterials = useMemo(
     () =>
-      EMBELLISHMENTS.map(
+      Array.from(
+        { length: embellishmentCount },
         () =>
           new THREE.MeshPhysicalMaterial({
             color: "#090909",
@@ -212,7 +301,7 @@ export function NameExtrusionScene({ progress }: NameExtrusionSceneProps) {
             reflectivity: 1,
           })
       ),
-    []
+    [embellishmentCount]
   );
 
   const embellishmentGeometries = useMemo(
@@ -268,15 +357,14 @@ export function NameExtrusionScene({ progress }: NameExtrusionSceneProps) {
       groupRef.current.position.z = -t * PUSH_Z;
     }
 
-    EMBELLISHMENTS.forEach((item, index) => {
+    activeEmbellishments.forEach((item, index) => {
       const mesh = embellishmentRefs.current[index];
       if (!mesh) {
         return;
       }
 
       const delayed = clamp(
-        (t - EMBELLISHMENT_STAGGER_DELAYS[index]) /
-          (1 - EMBELLISHMENT_STAGGER_DELAYS[index]),
+        (t - activeStaggerDelays[index]) / (1 - activeStaggerDelays[index]),
         0,
         1
       );
@@ -323,7 +411,7 @@ export function NameExtrusionScene({ progress }: NameExtrusionSceneProps) {
         </group>
 
         <group>
-          {EMBELLISHMENTS.map((item, index) => (
+          {activeEmbellishments.map((item, index) => (
             <mesh
               key={`${item.kind}-${index}`}
               ref={(node) => {

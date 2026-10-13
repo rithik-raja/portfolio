@@ -24,10 +24,22 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             ))}
           </ul>
           <p>{project.summary}</p>
-          <a className="project-link" href={project.link} target="_blank" rel="noreferrer">
-            <span>{project.link}</span>
-            <ArrowRight size={14} strokeWidth={1.8} aria-hidden="true" />
-          </a>
+          {project.link ? (
+            <a
+              className="project-link"
+              href={project.link}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span>{project.link}</span>
+              <ArrowRight size={14} strokeWidth={1.8} aria-hidden="true" />
+            </a>
+          ) : project.linkLabel ? (
+            <span className="project-link project-link-static">
+              <span>{project.linkLabel}</span>
+              <ArrowRight size={14} strokeWidth={1.8} aria-hidden="true" />
+            </span>
+          ) : null}
         </article>
       ))}
     </SectionReveal>

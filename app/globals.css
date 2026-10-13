@@ -220,8 +220,27 @@ body {
   text-decoration: none;
 }
 
-.entry-card a.project-link {
+.entry-card .project-link {
   display: inline-flex;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.project-link-static {
+  margin-top: 0.7rem;
+  cursor: default;
+}
+
+.intro-copy .project-link {
+  display: inline-flex;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.intro-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-top: 1rem;
 }
 
 .project-link svg {
@@ -263,16 +282,8 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.16);
   display: grid;
   grid-template-columns: 172px 1fr;
-  gap: 1.4rem;
+  gap: 1.6rem 1.4rem;
   padding: 1.2rem 0 1.5rem;
-}
-
-.experience-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
-  align-items: stretch;
-  padding: 0.1rem 0 0.2rem;
 }
 
 .experience-marker {
@@ -296,7 +307,7 @@ body {
   background: #ffffff;
 }
 
-.experience-marker:not(:last-child)::after {
+.experience-marker--linked::after {
   content: "";
   position: absolute;
   left: 0.62rem;
@@ -339,10 +350,8 @@ body {
   color: rgba(255, 255, 255, 0.72);
 }
 
-.experience-text-column {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.experience-summary {
+  min-width: 0;
 }
 
 .experience-paragraph {
@@ -350,6 +359,68 @@ body {
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.68;
   max-width: 70ch;
+}
+
+.experience-patents {
+  margin-top: 0.6rem;
+}
+
+.patents-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.experience-patents ul {
+  margin: 0;
+  padding-left: 1.05rem;
+  list-style: disc;
+}
+
+.experience-patents li {
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.45;
+  max-width: 70ch;
+}
+
+.experience-patents li::marker {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.experience-patents li + li {
+  margin-top: 0.25rem;
+}
+
+.education-entry {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 1.2rem 0 1.4rem;
+}
+
+.education-heading {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.education-highlights {
+  margin: 0.5rem 0 0;
+  padding-left: 1.05rem;
+  list-style: disc;
+}
+
+.education-highlights li {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.5;
+  max-width: 70ch;
+}
+
+.education-highlights li + li {
+  margin-top: 0.25rem;
 }
 
 @media (max-width: 768px) {
@@ -368,7 +439,7 @@ body {
   }
 
   .intro-photo-wrap {
-    justify-self: start;
+    justify-self: center;
     width: min(100%, 230px);
   }
 
@@ -383,14 +454,48 @@ body {
   }
 
   .experience-journey {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: 92px 1fr;
+    gap: 1.15rem 0.85rem;
     padding: 1rem 0 1.25rem;
   }
 
-  .experience-timeline {
-    align-items: flex-start;
-    gap: 1.15rem;
-    padding-left: 0.15rem;
+  .experience-marker {
+    padding-left: 1.75rem;
+  }
+
+  .experience-marker::before {
+    left: 0.28rem;
+    top: 25px;
+    width: 8px;
+    height: 8px;
+  }
+
+  .experience-marker--linked::after {
+    left: 0.48rem;
+    top: 29px;
+    bottom: calc(-1.15rem - 29px);
+  }
+
+  .logo-frame {
+    width: 58px;
+    height: 58px;
+    border-radius: 12px;
+  }
+
+  .company-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+  }
+
+  .marker-role {
+    margin-top: 0.55rem;
+    font-size: 0.68rem;
+    line-height: 1.35;
+  }
+
+  .marker-company {
+    font-size: 0.76rem;
+    line-height: 1.35;
   }
 }
